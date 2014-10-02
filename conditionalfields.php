@@ -106,3 +106,40 @@ function conditionalfields_civicrm_caseTypes(&$caseTypes) {
 function conditionalfields_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _conditionalfields_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
+
+/**
+ * Implementation of hook_civicrm_buildForm
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_buildForm
+ */
+function conditionalfields_civicrm_buildForm($formName, &$form){
+  // make sure this doesn't get loaded more than once
+  static $loaded = FALSE;
+
+  $formList = array();
+  CRM_Conditionalfields_Hook::conditionalFields($formList);
+
+  $jsToLoad = array();
+  foreach ($formList as $specFormName => $specData) {
+    // TODO: support entities other than events
+    if ($formName == $specFormName && $form->_eventId == $specData['entityID']) {
+      // make sure the file exists
+      $baseDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath($specData['extension']);
+      $js_file = "js/{$specFormName}/{$specData['entityID']}.js";
+      if (file_exists($baseDir . '/' . $js_file)) {
+        $jsToLoad[$specData['extension']] = $js_file;
+      }
+    }
+  }
+
+  if (!empty($jsToLoad) && !$loaded) {
+    $loaded = TRUE;
+
+    $ccr = CRM_Core_Resources::singleton();
+    $ccr->addScriptFile('com.ginkgostreet.conditionalfields', "js/class.showHideObj.js");
+
+    foreach ($jsToLoad as $ext => $path) {
+      $ccr->addScriptFile($ext, $path);
+    }
+  }
+}

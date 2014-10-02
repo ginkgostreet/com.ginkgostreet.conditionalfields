@@ -29,9 +29,13 @@
     database rather than in flat files.
 
     In this alpha, the conditions will be stored in JSON format in JavaScript
-    files.
+    files. At present, this extension provides only the framework, or the engine,
+    for conditionally displaying fields. To use it, you must create an extension
+    which:
 
-    TODO: Add more doc about how to use the extension.
+      1) implements hook_civicrm_conditionalField(), and
+      2) provides show/hide configs in files matching the following pattern:
+         {$EXT_ROOT}/js/{$FORM_NAME}/{$ENTITY_ID}.js
   </comments>
   <civix>
     <namespace>CRM/Conditionalfields</namespace>
