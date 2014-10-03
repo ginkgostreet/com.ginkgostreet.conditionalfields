@@ -121,8 +121,7 @@ function conditionalfields_civicrm_buildForm($formName, &$form){
 
   $jsToLoad = array();
   foreach ($formList as $specFormName => $specData) {
-    $entityID = _conditionalfields_getEntityID($form);
-    if ($formName == $specFormName && $entityID == $specData['entityID']) {
+    if ($formName == $specFormName && _conditionalfields_getEntityID($form) == $specData['entityID']) {
       // make sure the file exists
       $baseDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath($specData['extension']);
       $js_file = "js/{$specFormName}/{$specData['entityID']}.js";
@@ -160,5 +159,6 @@ function _conditionalfields_getEntityID(CRM_Core_Form $form) {
     return $form->_eventId;
   }
 
-  throw new Exception('Unable to get the entity ID for form ' . get_class($form));
+  CRM_Core_Error::debug_log_message('com.ginkgostreet.conditionalfields: Unable to get the entity ID for form ' . get_class($form));
+  return NULL;
 }
