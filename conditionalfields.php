@@ -121,8 +121,8 @@ function conditionalfields_civicrm_buildForm($formName, &$form){
 
   $jsToLoad = array();
   foreach ($formList as $specFormName => $specData) {
-    // TODO: support entities other than events
-    if ($formName == $specFormName && $form->_eventId == $specData['entityID']) {
+    $entityID = _conditionalfields_getEntityID($form);
+    if ($formName == $specFormName && $entityID == $specData['entityID']) {
       // make sure the file exists
       $baseDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath($specData['extension']);
       $js_file = "js/{$specFormName}/{$specData['entityID']}.js";
@@ -142,4 +142,23 @@ function conditionalfields_civicrm_buildForm($formName, &$form){
       $ccr->addScriptFile($ext, $path);
     }
   }
+}
+
+/**
+ * Helper function to deal with inconsistency in assigning IDs to forms
+ *
+ * @param CRM_Core_Form $form
+ * @return string The ID of the entity (e.g., Contribution, Event) represented in the form
+ * @throws Exception
+ */
+function _conditionalfields_getEntityID(CRM_Core_Form $form) {
+  if (is_a($form, 'CRM_Contribute_Form') || is_a($form, 'CRM_Contribute_Form_ContributionBase')) {
+    return $form->_id;
+  }
+
+  if (is_a($form, 'CRM_Event_Form_Registration')) {
+    return $form->_eventId;
+  }
+
+  throw new Exception('Unable to get the entity ID for form ' . get_class($form));
 }
