@@ -116,18 +116,20 @@ function conditionalfields_civicrm_buildForm($formName, &$form){
   // make sure this doesn't get loaded more than once
   static $loaded = FALSE;
 
-  $formList = array();
-  CRM_Conditionalfields_Hook::conditionalFields($formList);
+  $extensions = array();
+  CRM_Conditionalfields_Hook::conditionalFields($extensions);
+//  var_dump($form->get('id'));
 
   $jsToLoad = array();
-  foreach ($formList as $specFormName => $specData) {
-    if ($formName == $specFormName && _conditionalfields_getEntityID($form) == $specData['entityID']) {
-      // make sure the file exists
-      $baseDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath($specData['extension']);
-      $js_file = "js/{$specFormName}/{$specData['entityID']}.js";
-      if (file_exists($baseDir . '/' . $js_file)) {
-        $jsToLoad[$specData['extension']] = $js_file;
-      }
+  foreach ($extensions as $ext) {
+    // look for implementations by form ID
+    // make sure the file exists
+    $entId = $form->get('id');
+    if (is_null($entId)) continue;
+    $baseDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath($ext);
+    $js_file = "js/{$formName}/{$entId}.js";
+    if (file_exists($baseDir . '/' . $js_file)) {
+      $jsToLoad[$ext] = $js_file;
     }
   }
 
