@@ -12,8 +12,8 @@ class CRM_Conditionalfields_Hook {
    * @return null The return value is ignored
    */
   public static function conditionalFields (array &$enableForExtensions) {
-    return CRM_Utils_Hook::singleton()->invoke(1, $enableForExtensions, CRM_Utils_Hook::$_nullObject,
-      CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject,
+    return CRM_Utils_Hook::singleton()->invoke(1,
+      $enableForExtensions, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject, CRM_Utils_Hook::$_nullObject,
       'civicrm_conditionalFields');
   }
 }
