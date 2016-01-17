@@ -5,6 +5,9 @@
  */
 function showHideObj(toggleObject) {
   this.toggleObject = toggleObject;
+  this.triggerObjectsArray = null;
+  this.logicalOperator = 'AND';
+  this.eventBoundTo = this.getDefaultEventBinding();
 }
 
 /**
