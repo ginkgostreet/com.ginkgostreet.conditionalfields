@@ -1,9 +1,10 @@
-function showHideObj (name) {
-  this.elementName = name;
-  // the element to be shown/hidden; this is a jQuery object
-  this.element = cj('[name="' + name + '"]').first().closest('.crm-section');
-  // array of objects specifying a list form elements/values, any of which will result in a show
-  this.triggers = [];
+/**
+ * Constructor for this class.
+ * 
+ * @param toggleObject jQueryObject - result of a jQuery selector, e.g. cj("input#CIVICRM_QFID_0_34") 
+ */
+function showHideObj(toggleObject) {
+  this.toggleObject = toggleObject;
 }
 
 /**
