@@ -10,6 +10,28 @@ function showHideObj(toggleObject) {
 }
 
 /**
+ * Sets the logical operator to apply to all trigger objects.
+ * If 'AND', then all conditions must be met to show this showHideObject.
+ * If 'OR', then only one condition must be met to show this showHideObject.
+ * 
+ * @param fieldName string - either 'AND' or 'OR', case insensitive
+ * 
+ * Any unsupported value will result in an error being logged to the console,
+ * and the current logicalOperator will remain in effect.
+ * 
+ */
+showHideObj.prototype.setLogicalOperator = function(operatorString) {
+  operatorString = operatorString.toUpperCase();
+  if((operatorString === 'AND') || (operatorString === 'OR')) {
+    this.logicalOperator = operatorString;
+  }
+  else {
+    console.log("Invalid operatorString: " + operatorString);
+  }
+    
+};
+
+/**
  * @param fieldName string - name of triggering field
  * @param value string - name of triggering value
  */
@@ -79,7 +101,7 @@ showHideObj.prototype.unsetValue = function() {
     field.val('');
   }
 };
-
+/*
 ////////////////////////////////////////////////
   // you shouldn't need to edit below this line //
   ////////////////////////////////////////////////
@@ -137,3 +159,4 @@ showHideObj.prototype.unsetValue = function() {
       el.hide();
     }
   }
+  */
