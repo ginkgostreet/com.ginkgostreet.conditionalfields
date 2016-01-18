@@ -35,6 +35,33 @@ showHideObj.prototype.setLogicalOperator = function(operatorString) {
 };
 
 /**
+ *
+ * Determines the type of the inputElement supplied.)
+ * 
+ * @param inputElement jQueryObject - result of a jQuery selector that resolves to an input
+ * e.g. cj("input#CIVICRM_QFID_0_34")
+ * 
+ * @return inputType string - defaults to 'value', or finds specific elements as defined
+ * (e.g. 'radio', 'checkbox', 'multi-select', etc.
+ */
+
+showHideObj.prototype.determineInputType = function(inputElement) {
+   if(inputElement.is('select[multiple=multiple]')) {
+     return 'multi-select';
+   }
+   else if(inputElement.is(':checkbox')) {
+     return 'checkbox';
+   }
+   else if(inputElement.is(':radio')) {
+     return 'radio';
+   }
+   else {
+     return 'value';
+   }
+};
+
+
+/**
  * Adds a trigger object.
  * 
  * @param triggerObject Trigger - see the Trigger class for details about creating a Trigger object
