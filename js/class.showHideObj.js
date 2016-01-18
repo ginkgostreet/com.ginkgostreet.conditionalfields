@@ -48,7 +48,6 @@ showHideObj.prototype.setLogicalOperator = function(operatorString) {
  */
 showHideObj.prototype.addTrigger = function(triggerObject) {
   if(triggerObject.constructor === Trigger) {
-    triggerObject.setInputType(this.determineInputType(triggerObject.inputElement));
     this.triggerObjectsArray.push(triggerObject);
   }
   else {
