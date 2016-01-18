@@ -17,7 +17,7 @@ function showHideObj(toggleObject) {
  * If 'AND', then all conditions must be met to show this showHideObject.
  * If 'OR', then only one condition must be met to show this showHideObject.
  * 
- * @param fieldName string - either 'AND' or 'OR', case insensitive
+ * @param operatorString string - either 'AND' or 'OR', case insensitive
  * 
  * Any unsupported value will result in an error being logged to the console,
  * and the current logicalOperator will remain in effect.

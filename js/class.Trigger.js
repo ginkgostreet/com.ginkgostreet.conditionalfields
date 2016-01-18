@@ -15,7 +15,9 @@ function Trigger(inputElement, showValue) {
   this.inputElement = inputElement;
   this.showValue = showValue;
   this.inputType = this.determineInputType();
+  this.isConditionTrue = this.determineConditionTrue; // assignment of a function to a function
 }
+
 /**
  * If the Trigger itself is unable to properly determine the inputType during its construction,
  * the inputType can be set manually by using this function.
@@ -49,6 +51,38 @@ Trigger.prototype.determineInputType = function() {
      this.inputType = 'value';
 };
 
-// TODO have function to set new evaluation function, and have a default evaluation function. Remember that function are objects.
-// this.evaluateCondition
+/**
+ * If the desired condition to have isConditionTrue return true 
+ * is not met by the default, determineConditionTrue,
+ * the isConditionTrue function can be set manually set by using this function.
+ * 
+ * @param conditionFunction function - function to replace default behavior for isConditionTrue, 
+ * IMPORTANT: conditionFunction must return true or false
+ * 
+ * e.g. function (arg1, arg2) {return (arg1 === arg2)};
+ *
+ */
+Trigger.prototype.setInputType = function (conditionFunction) {
+    this.isConditionTrue = conditionFunction;
+};
 
+/**
+ *
+ * This is the default function for determining if the Trigger will evaluate to true.
+ * Based upon this.inputType, it will determine how to check if the showValue matches with the inputElement.
+ * 
+ * @return result - true or false
+ * 
+ */
+Trigger.prototype.determineConditionTrue = function() {
+  
+  var el = this.inputElement;
+  var type = this.inputType;
+  
+  if(type === 'value') {
+    console.log('type is value');
+    console.log(el.val());
+    return (el.val() === this.showValue);
+  }
+  
+};
