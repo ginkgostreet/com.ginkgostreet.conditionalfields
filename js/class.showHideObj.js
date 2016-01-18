@@ -54,14 +54,6 @@ showHideObj.prototype.addTrigger = function(triggerObject) {
 };
 
 /**
- * @param fieldName string - name of triggering field
- * @param value string - name of triggering value
- */
-showHideObj.prototype.registerTrigger = function(fieldName, value) {
-  this.triggers.push({name:fieldName, value:value});
-};
-
-/**
  * @param removedVal string - This is a bit of a hack to account for the fact
  *                            that DOMNodeRemoved fires *before* the node is
  *                            removed, making it impossible to rely on the DOM
