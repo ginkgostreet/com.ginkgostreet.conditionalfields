@@ -6,7 +6,7 @@
  */
 function showHideObj(toggleObject) {
   this.toggleObject = toggleObject;
-  this.triggerObjectsArray = null;
+  this.triggerObjectsArray = new Array;
   this.logicalOperator = 'AND';
 }
 
@@ -70,8 +70,8 @@ showHideObj.prototype.determineInputType = function(inputElement) {
  * 
  */
 showHideObj.prototype.addTrigger = function(triggerObject) {
-  if(typeof triggerObject === "Trigger") {
-    triggerObject.setInputType(this.determineInputType(triggerObject));
+  if(triggerObject.constructor === Trigger) {
+    triggerObject.setInputType(this.determineInputType(triggerObject.inputElement));
     this.triggerObjectsArray.push(triggerObject);
   }
   else {

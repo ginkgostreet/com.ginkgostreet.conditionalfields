@@ -21,7 +21,7 @@ function Trigger(inputElement, showValue) {
  * e.g. "checkbox"
  *
  */
-function setInputType(inputType) {
+Trigger.prototype.setInputType = function (inputType) {
     this.inputType = inputType;
-}
+};
 
