@@ -42,9 +42,8 @@ showHideObj.prototype.setLogicalOperator = function(operatorString) {
  * e.g. cj("input#CIVICRM_QFID_0_34")
  * 
  * @return inputType string - defaults to 'value', or finds specific elements as defined
- * (e.g. 'radio', 'checkbox', 'multi-select', etc.
+ * (e.g. 'radio', 'checkbox', 'multi-select', etc.)
  */
-
 showHideObj.prototype.determineInputType = function(inputElement) {
    if(inputElement.is('select[multiple=multiple]')) {
      return 'multi-select';
@@ -72,6 +71,7 @@ showHideObj.prototype.determineInputType = function(inputElement) {
  */
 showHideObj.prototype.addTrigger = function(triggerObject) {
   if(typeof triggerObject === "Trigger") {
+    triggerObject.setInputType(this.determineInputType(triggerObject));
     this.triggerObjectsArray.push(triggerObject);
   }
   else {
