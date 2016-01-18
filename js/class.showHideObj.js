@@ -12,6 +12,8 @@ function showHideObj(toggleObject) {
 
 /**
  * Sets the logical operator to apply to all trigger objects.
+ * NOTE: By default, the logical operator is set to 'AND' in the constructor.
+ * 
  * If 'AND', then all conditions must be met to show this showHideObject.
  * If 'OR', then only one condition must be met to show this showHideObject.
  * 
@@ -125,12 +127,6 @@ showHideObj.prototype.unsetValue = function() {
 ////////////////////////////////////////////////
   // you shouldn't need to edit below this line //
   ////////////////////////////////////////////////
-
-  // hide dependent fields by default
-  $.each(hiddenByDefault, function(index, fieldName) {
-    setFieldDisplay(fieldName, 0);
-  });
-
   // parse show/hide rules
   var showHideObjArr = {};
   $.each(showHideRules, function(index, obj) {
@@ -167,16 +163,4 @@ showHideObj.prototype.unsetValue = function() {
     }
   });
 
-  function setFieldDisplay(name, t) {
-    var el = $('[name="' + name + '"]').first().closest('.crm-section');
-    if (name === 'discountcode') { //CiviDiscount Exception... grr
-      el = $('[name="' + name + '"]').first().closest('table');
-    }
-
-    if (t === 1) {
-      el.show();
-    } else {
-      el.hide();
-    }
-  }
   */
