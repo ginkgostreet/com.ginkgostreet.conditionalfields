@@ -7,7 +7,6 @@ function showHideObj(toggleObject) {
   this.toggleObject = toggleObject;
   this.triggerObjectsArray = null;
   this.logicalOperator = 'AND';
-  this.eventBoundTo = this.getDefaultEventBinding();
 }
 
 /**
@@ -80,3 +79,61 @@ showHideObj.prototype.unsetValue = function() {
     field.val('');
   }
 };
+
+////////////////////////////////////////////////
+  // you shouldn't need to edit below this line //
+  ////////////////////////////////////////////////
+
+  // hide dependent fields by default
+  $.each(hiddenByDefault, function(index, fieldName) {
+    setFieldDisplay(fieldName, 0);
+  });
+
+  // parse show/hide rules
+  var showHideObjArr = {};
+  $.each(showHideRules, function(index, obj) {
+    // register triggers for each dependent
+    $.each(obj.dependents, function(i, dependentName) {
+      if (!showHideObjArr.hasOwnProperty(dependentName)) {
+        showHideObjArr[dependentName] = new showHideObj(dependentName);
+      }
+      showHideObjArr[dependentName].registerTrigger(obj.name, obj.value);
+    });
+
+    // wire up the fields that trigger the show/hide behavior
+    var el = $('[name="' + obj.name + '"]');
+
+    // special case for advanced multiselects
+    if(el.is('select[multiple=multiple]')) {
+      el.bind('DOMNodeInserted', function(){
+        $.each(obj.dependents, function(i, dep) {
+          showHideObjArr[dep].toggle();
+        });
+      });
+      el.bind('DOMNodeRemoved', function(e){
+        var removedEl = e.target;
+        $.each(obj.dependents, function(i, dep) {
+          showHideObjArr[dep].toggle($(removedEl).attr('value'));
+        });
+      });
+    } else {
+      el.change(function() {
+        $.each(obj.dependents, function(i, dep) {
+          showHideObjArr[dep].toggle();
+        });
+      });
+    }
+  });
+
+  function setFieldDisplay(name, t) {
+    var el = $('[name="' + name + '"]').first().closest('.crm-section');
+    if (name === 'discountcode') { //CiviDiscount Exception... grr
+      el = $('[name="' + name + '"]').first().closest('table');
+    }
+
+    if (t === 1) {
+      el.show();
+    } else {
+      el.hide();
+    }
+  }
