@@ -5,17 +5,28 @@
  * e.g. cj("input#CIVICRM_QFID_0_34")
  * 
  * @param showValue string - value of the inputElement which causes the Trigger to evaluate to true
- * e.g. "1" - typically for radio buttons or checkboxes to be "checked"
- * e.g. undefined - for a radio button or checkbox to be "unchecked"
+ *
+ * Inputs based upon value only:
+ * e.g. "Arizona" - for a text input object value as a trigger
  * 
- * If per the above example, this were the only Trigger belonging to showHideObj, and the showValue at runtime = "1",
- * the showHideObj would be shown.
+ * Inputs based upon checked/unchecked or selected/unselected:
+ * e.g. "checked" - for radio buttons/checkboxes to be "checked" as a trigger
+ * e.g. "unchecked" - for radio buttons/checkboxes to be "unchecked" as a trigger
+ * 
+ * Mixed case of checked and a specific value:
+ * e.g. "98" for radio button which will change value, add a radio button Trigger, 
+ * but will need to afterwards setInputType('value'), 
+ * and add a separate trigger for checked/unchecked if desired on the same inputElement.
+ * 
  */
 function Trigger(inputElement, showValue) {
   this.inputElement = inputElement;
   this.showValue = showValue;
-  this.inputType = this.determineInputType();
+  this.inputType = this.determineInputType(inputElement);
   this.isConditionTrue = this.determineConditionTrue; // assignment of a function to a function
+  
+  
+    
 }
 
 /**
@@ -31,24 +42,24 @@ Trigger.prototype.setInputType = function (inputType) {
 };
 
 /**
- *
+ * 
  * Determines the type of the inputElement supplied.
  * Defaults to 'value', or finds specific element by reflection:
  * (e.g. 'radio', 'checkbox', 'multi-select', etc.)
  * 
+ * @param inputElement - a JQuery selector that resolves to an input
+ * 
  */
-Trigger.prototype.determineInputType = function() {
+Trigger.prototype.determineInputType = function(inputElement) {
   
-  var el = this.inputElement;
-  
-   if(el.is('select[multiple=multiple]'))
-     this.inputType = 'multi-select';
-   else if(el.is(':checkbox'))
-     this.inputType = 'checkbox';
-   else if(el.is(':radio'))
-     this.inputType = 'radio';
-   else
-     this.inputType = 'value';
+  if(inputElement.is('select[multiple=multiple]'))
+    return 'multi-select';
+  else if(inputElement.is(':checkbox'))
+    return 'checkbox';
+  else if(inputElement.is(':radio'))
+    return 'radio';
+  else
+    return 'value';
 };
 
 /**
@@ -62,7 +73,7 @@ Trigger.prototype.determineInputType = function() {
  * e.g. function (arg1, arg2) {return (arg1 === arg2)};
  *
  */
-Trigger.prototype.setInputType = function (conditionFunction) {
+Trigger.prototype.setConditionTrueFunction = function (conditionFunction) {
     this.isConditionTrue = conditionFunction;
 };
 
@@ -71,18 +82,35 @@ Trigger.prototype.setInputType = function (conditionFunction) {
  * This is the default function for determining if the Trigger will evaluate to true.
  * Based upon this.inputType, it will determine how to check if the showValue matches with the inputElement.
  * 
+ * @param multiSelectremovedValue string - this is an optional parameter that is only passed in to handle multi-selects
+ * 
  * @return result - true or false
  * 
  */
-Trigger.prototype.determineConditionTrue = function() {
+Trigger.prototype.determineConditionTrue = function(multiSelectremovedValue) {
   
   var el = this.inputElement;
   var type = this.inputType;
-  
+    
   if(type === 'value') {
-    console.log('type is value');
-    console.log(el.val());
-    return (el.val() === this.showValue);
+    return (this.showValue === el.val());
   }
+  else if ((type === 'radio') || (type === 'checkbox')) { 
+    
+    if(this.showValue === "unchecked") {
+      return (!el.is(':checked'));
+    }
+    else if(this.showValue === "checked") { 
+      return (el.is(':checked'));
+    }
+    else {
+      console.log("Invalid showValue specified for radio/checkbox element " + this.showValue);
+      return false;
+    }
+ }
+ else if((type === 'multi-select')) {
+   // NEED TO IMPLEMENT
+   
+ }
   
 };

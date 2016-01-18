@@ -34,8 +34,33 @@ showHideObj.prototype.setLogicalOperator = function(operatorString) {
     
 };
 
-
-
+/**
+ * Loops through each Trigger and evaluates whether or not to show or hide itself,
+ * based upon the logicalOperator.
+ * 
+ * @return result - true or false
+ * 
+ * 
+ */
+showHideObj.prototype.shouldBeShown = function() {
+  
+  var triggers = this.triggerObjectsArray;
+  var len = triggers.length;
+  var last = len - 1;
+  
+  for(i = 0; i < len; i++) {
+       
+    if(!triggers[i].isConditionTrue() && this.logicalOperator === 'AND') { // first FALSE we hit, we're done checking
+      return false;
+    }
+    else if (triggers[i].isConditionTrue() && this.logicalOperator === 'OR') { // first TRUE we hit, we're done checking
+      return true;
+    }
+    else if (i === last) { // last element, if FALSE, we don't show because AND/OR fails 
+      return triggers[i].isConditionTrue();
+    }
+  }
+};
 
 /**
  * Adds a trigger object.
