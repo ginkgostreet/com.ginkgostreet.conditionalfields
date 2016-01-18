@@ -83,6 +83,10 @@ Trigger.prototype.setConditionTrueFunction = function (conditionFunction) {
  * Based upon this.inputType, it will determine how to check if the showValue matches with the inputElement.
  * 
  * @param multiSelectremovedValue string - this is an optional parameter that is only passed in to handle multi-selects
+ * This is a bit of a hack to account for the fact that 
+ * DOMNodeRemoved fires *before* the node is removed, 
+ * making it impossible to rely on the DOM for information about de-selected options 
+ * in an advanced multiselect context.
  * 
  * @return result - true or false
  * 
@@ -109,7 +113,8 @@ Trigger.prototype.determineConditionTrue = function(multiSelectremovedValue) {
     }
  }
  else if((type === 'multi-select')) {
-   // NEED TO IMPLEMENT
+   return (el.children('option[value="' + this.showValue + '"]').length !== 0
+            && multiSelectremovedValue !== this.showValue);
    
  }
   
