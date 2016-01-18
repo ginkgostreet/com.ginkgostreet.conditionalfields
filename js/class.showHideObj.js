@@ -1,7 +1,8 @@
 /**
  * Constructor for this class.
  * 
- * @param toggleObject jQueryObject - result of a jQuery selector, e.g. cj("input#CIVICRM_QFID_0_34") 
+ * @param toggleObject jQueryObject - result of a jQuery selector to be shown or hidden
+ * e.g. cj("input#CIVICRM_QFID_0_34").closest('div.price-set-row')
  */
 function showHideObj(toggleObject) {
   this.toggleObject = toggleObject;
@@ -29,6 +30,25 @@ showHideObj.prototype.setLogicalOperator = function(operatorString) {
     console.log("Invalid operatorString: " + operatorString);
   }
     
+};
+
+/**
+ * Adds a trigger object.
+ * 
+ * @param triggerObject Trigger - see the Trigger class for details about creating a Trigger object
+ * 
+ * Any invalid object result in an error being logged to the console,
+ * and the object will not be added to this.triggerObjectsArray.
+ * 
+ */
+showHideObj.prototype.addTrigger = function(triggerObject) {
+  if(typeof triggerObject === "Trigger") {
+    this.triggerObjectsArray.push(triggerObject);
+  }
+  else {
+    console.log("Invalid triggerObject (below): ");
+    console.log(triggerObject);
+  }
 };
 
 /**

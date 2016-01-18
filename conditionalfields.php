@@ -138,6 +138,7 @@ function conditionalfields_civicrm_buildForm($formName, &$form){
 
     $ccr = CRM_Core_Resources::singleton();
     $ccr->addScriptFile('com.ginkgostreet.conditionalfields', "js/class.showHideObj.js");
+    $ccr->addScriptFile('com.ginkgostreet.conditionalfields', "js/class.Trigger.js");
 
     foreach ($jsToLoad as $ext => $path) {
       $ccr->addScriptFile($ext, $path);
