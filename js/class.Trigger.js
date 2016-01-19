@@ -22,7 +22,8 @@
 function Trigger(inputElement, showValue) {
   this.inputElement = inputElement;
   this.showValue = showValue;
-  this.inputType = this.determineInputType(inputElement);
+  this.inputType = undefined;
+  this.determineInputType();
   this.isConditionTrue = this.determineConditionTrue; // assignment of a function to a function
   
   
@@ -50,16 +51,19 @@ Trigger.prototype.setInputType = function (inputType) {
  * @param inputElement - a JQuery selector that resolves to an input
  * 
  */
-Trigger.prototype.determineInputType = function(inputElement) {
+Trigger.prototype.determineInputType = function() {
   
-  if(inputElement.is('select[multiple=multiple]'))
-    return 'multi-select';
+  var inputElement = this.inputElement;
+  
+ if(inputElement.is('select[multiple=multiple]'))
+    this.inputType = 'multi-select';
   else if(inputElement.is(':checkbox'))
-    return 'checkbox';
+    this.inputType = 'checkbox';
   else if(inputElement.is(':radio'))
-    return 'radio';
+    this.inputType = 'radio';
   else
-    return 'value';
+    this.inputType = 'value';
+ 
 };
 
 /**

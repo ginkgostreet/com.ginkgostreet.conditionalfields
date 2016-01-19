@@ -82,54 +82,16 @@ showHideObj.prototype.addTrigger = function(triggerObject) {
 };
 
 /**
- * @param removedVal string - This is a bit of a hack to account for the fact
- *                            that DOMNodeRemoved fires *before* the node is
- *                            removed, making it impossible to rely on the DOM
- *                            for information about de-selected options in an
- *                            advanced multiselect context.
+ * Binds DOM events to the showHide object.
+ * 
+ * @param triggerObject Trigger - see the Trigger class for details about creating a Trigger object
+ * 
+ * Any invalid object result in an error being logged to the console,
+ * and the object will not be added to this.triggerObjectsArray.
+ * 
  */
-showHideObj.prototype.toggle = function(removedVal) {
-  var SHO = this;
-  var ruleApplied = false;
-  cj.each(SHO.triggers, function(i, trigger) {
-    var triggerEl = cj('[name="' + trigger.name + '"]');
-
-    // special case for advanced multiselects
-    if(triggerEl.is('select[multiple=multiple]')) {
-      if(
-        triggerEl.children('option[value="' + trigger.value + '"]').length &&
-        removedVal !== trigger.value
-      ) {
-        SHO.element.show(1000);
-        ruleApplied = true;
-        return false;
-      }
-    } else if (triggerEl.is(':checkbox, :radio')) {
-      if (
-        // allows an unchecked checkbox to be used as a trigger
-        (
-          trigger.value === undefined
-          && cj(triggerEl).filter(':checked').length === 0
-        )
-        // standard check: if checked box has the value, show the dependent
-        || cj(triggerEl).filter(':checked[value=' + trigger.value + ']').length) {
-        SHO.element.show(1000);
-        ruleApplied = true;
-        return false;
-      }
-    } else {
-      if (cj(triggerEl).val() === trigger.value) {
-        SHO.element.show(1000);
-        ruleApplied = true;
-        return false;
-      }
-    }
-  });
-
-  if (!ruleApplied) {
-    this.unsetValue();
-    this.element.hide(1000);
-  }
+showHideObj.prototype.bindEvents = function() {
+  
 };
 
 showHideObj.prototype.unsetValue = function() {
