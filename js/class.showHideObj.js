@@ -35,14 +35,32 @@ showHideObj.prototype.setLogicalOperator = function(operatorString) {
 };
 
 /**
- * Loops through each Trigger and evaluates whether or not to show or hide itself,
- * based upon the logicalOperator.
+ * Shows or hides this.toggleObject based upon Trigger logic and configuration of this object.
+ * 
+ * @param multiSelectRemovedValue string - optionally passed from bindEvents IFF we are dealing with a multi-select
  * 
  * @return result - true or false
  * 
  * 
  */
-showHideObj.prototype.shouldBeShown = function() {
+showHideObj.prototype.toggleShowHide = function(multiSelectRemovedValue) {
+  
+  this.shouldBeShown(multiSelectRemovedValue) ? this.show() : this.hide();
+  
+};
+
+
+/**
+ * Loops through each Trigger and evaluates whether or not to show or hide this.toggleObject,
+ * based upon the logicalOperator.
+ * 
+ * @param multiSelectRemovedValue string - optionally passed from toggleShowHide IFF we are dealing with a multi-select
+ * 
+ * @return result - true or false
+ * 
+ * 
+ */
+showHideObj.prototype.shouldBeShown = function(multiSelectRemovedValue) {
   
   var triggers = this.triggerObjectsArray;
   var len = triggers.length;
@@ -50,14 +68,14 @@ showHideObj.prototype.shouldBeShown = function() {
   
   for(i = 0; i < len; i++) {
        
-    if(!triggers[i].isConditionTrue() && this.logicalOperator === 'AND') { // first FALSE we hit, we're done checking
+    if(!triggers[i].isConditionTrue(multiSelectRemovedValue) && this.logicalOperator === 'AND') { // first FALSE we hit, we're done checking
       return false;
     }
-    else if (triggers[i].isConditionTrue() && this.logicalOperator === 'OR') { // first TRUE we hit, we're done checking
+    else if (triggers[i].isConditionTrue(multiSelectRemovedValue) && this.logicalOperator === 'OR') { // first TRUE we hit, we're done checking
       return true;
     }
     else if (i === last) { // last element, if FALSE, we don't show because AND/OR fails 
-      return triggers[i].isConditionTrue();
+      return triggers[i].isConditionTrue(multiSelectRemovedValue);
     }
   }
 };
@@ -82,16 +100,36 @@ showHideObj.prototype.addTrigger = function(triggerObject) {
 };
 
 /**
- * Binds DOM events to the showHide object.
- * 
- * @param triggerObject Trigger - see the Trigger class for details about creating a Trigger object
- * 
- * Any invalid object result in an error being logged to the console,
- * and the object will not be added to this.triggerObjectsArray.
- * 
+ * Binds DOM events to the showHide object in order to run the toggleShowHide function
+ * upon the appropriate action taken on each individual Trigger object.
+ *  
  */
 showHideObj.prototype.bindEvents = function() {
   
+  var triggers = this.triggerObjectsArray;
+  var len = triggers.length;
+  
+  for(i = 0; i < len; i++) {
+    
+    var el = triggers[i].inputElement;
+      
+    if(el.inputType === 'multi-select') {
+      
+      el.bind('DOMNodeInserted', function() {
+        this.toggleShowHide();
+      });
+      
+      el.bind('DOMNodeRemoved', function(e){
+        var removedMultiSelectElementValue = $(e.target).attr('value');
+        this.toggleShowHide(removedMultiSelectElementValue);
+      });
+    } 
+    else {
+      el.change(function() {
+       this.toggleShowHide();
+      });
+    }
+  }
 };
 
 showHideObj.prototype.unsetValue = function() {

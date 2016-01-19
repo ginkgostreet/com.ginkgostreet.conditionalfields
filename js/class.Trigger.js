@@ -24,10 +24,7 @@ function Trigger(inputElement, showValue) {
   this.showValue = showValue;
   this.inputType = undefined;
   this.determineInputType();
-  this.isConditionTrue = this.determineConditionTrue; // assignment of a function to a function
-  
-  
-    
+  this.isConditionTrue = this.determineConditionTrue; // assignment of a function to a function    
 }
 
 /**
@@ -47,8 +44,6 @@ Trigger.prototype.setInputType = function (inputType) {
  * Determines the type of the inputElement supplied.
  * Defaults to 'value', or finds specific element by reflection:
  * (e.g. 'radio', 'checkbox', 'multi-select', etc.)
- * 
- * @param inputElement - a JQuery selector that resolves to an input
  * 
  */
 Trigger.prototype.determineInputType = function() {
@@ -119,7 +114,6 @@ Trigger.prototype.determineConditionTrue = function(multiSelectremovedValue) {
  else if((type === 'multi-select')) {
    return (el.children('option[value="' + this.showValue + '"]').length !== 0
             && multiSelectremovedValue !== this.showValue);
-   
  }
   
 };
