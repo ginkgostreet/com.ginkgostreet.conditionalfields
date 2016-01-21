@@ -19,12 +19,13 @@
  * and add a separate trigger for checked/unchecked if desired on the same inputElement.
  * 
  */
-function Trigger(inputElement, showValue) {
-  this.inputElement = inputElement;
-  this.showValue = showValue;
-  this.inputType = undefined;
-  this.determineInputType();
-  this.isConditionTrue = this.determineConditionTrue; // assignment of a function to a function    
+function Trigger(config) {
+  /*this.inputElement = undefined;
+  this.showValue = undefined;
+  this.inputType = undefined;*/
+  this.isConditionTrue = this.defaultTest;
+  cj.extend(this, config);
+  this.initializeInputTypeAndGetter();
 }
 
 /**
@@ -46,74 +47,37 @@ Trigger.prototype.setInputType = function (inputType) {
  * (e.g. 'radio', 'checkbox', 'multi-select', etc.)
  * 
  */
-Trigger.prototype.determineInputType = function() {
+Trigger.prototype.initializeInputTypeAndGetter = function() {
   
   var inputElement = this.inputElement;
   
- if(inputElement.is('select[multiple=multiple]'))
-    this.inputType = 'multi-select';
-  else if(inputElement.is(':checkbox'))
+  if(inputElement.is(':checkbox')) {
     this.inputType = 'checkbox';
-  else if(inputElement.is(':radio'))
+    this.getElementState = this.getCheckboxOrRadioState;
+  }
+  else if(inputElement.is(':radio')) {
     this.inputType = 'radio';
-  else
+    this.getElementState = this.getCheckboxOrRadioState;
+  }
+  else {
     this.inputType = 'value';
+    this.getElementState = this.getValue;
+  }
  
 };
 
-/**
- * If the desired condition to have isConditionTrue return true 
- * is not met by the default, determineConditionTrue,
- * the isConditionTrue function can be set manually set by using this function.
- * 
- * @param conditionFunction function - function to replace default behavior for isConditionTrue, 
- * IMPORTANT: conditionFunction must return true or false
- * 
- * e.g. function (arg1, arg2) {return (arg1 === arg2)};
- *
- */
-Trigger.prototype.setConditionTrueFunction = function (conditionFunction) {
-    this.isConditionTrue = conditionFunction;
+Trigger.prototype.defaultTest = function() {
+  return(this.showValue === this.getElementState(this.inputElement));
 };
 
-/**
- *
- * This is the default function for determining if the Trigger will evaluate to true.
- * Based upon this.inputType, it will determine how to check if the showValue matches with the inputElement.
- * 
- * @param multiSelectremovedValue string - this is an optional parameter that is only passed in to handle multi-selects
- * This is a bit of a hack to account for the fact that 
- * DOMNodeRemoved fires *before* the node is removed, 
- * making it impossible to rely on the DOM for information about de-selected options 
- * in an advanced multiselect context.
- * 
- * @return result - true or false
- * 
- */
-Trigger.prototype.determineConditionTrue = function(multiSelectremovedValue) {
-  
-  var el = this.inputElement;
-  var type = this.inputType;
-    
-  if(type === 'value') {
-    return (this.showValue === el.val());
-  }
-  else if ((type === 'radio') || (type === 'checkbox')) { 
-    
-    if(this.showValue === "unchecked") {
-      return (!el.is(':checked'));
-    }
-    else if(this.showValue === "checked") { 
-      return (el.is(':checked'));
-    }
-    else {
-      console.log("Invalid showValue specified for radio/checkbox element " + this.showValue);
-      return false;
-    }
- }
- else if((type === 'multi-select')) {
-   return (el.children('option[value="' + this.showValue + '"]').length !== 0
-            && multiSelectremovedValue !== this.showValue);
- }
-  
+Trigger.prototype.getElementState = function (el) {
+        
+};
+
+Trigger.prototype.getCheckboxOrRadioState = function (el) {
+  return (el.is(':checked') ? "checked" : "unchecked");
+};
+
+Trigger.prototype.getValue = function (el) {
+   return el.val();
 };

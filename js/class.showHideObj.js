@@ -60,7 +60,7 @@ showHideObj.prototype.toggleShowHide = function(multiSelectRemovedValue) {
  * 
  * 
  */
-showHideObj.prototype.shouldBeShown = function(multiSelectRemovedValue) {
+showHideObj.prototype.shouldBeShown = function() {
   
   var triggers = this.triggerObjectsArray;
   var len = triggers.length;
@@ -68,14 +68,14 @@ showHideObj.prototype.shouldBeShown = function(multiSelectRemovedValue) {
   
   for(i = 0; i < len; i++) {
        
-    if(!triggers[i].isConditionTrue(multiSelectRemovedValue) && this.logicalOperator === 'AND') { // first FALSE we hit, we're done checking
+    if(!triggers[i].isConditionTrue() && this.logicalOperator === 'AND') { // first FALSE we hit, we're done checking
       return false;
     }
-    else if (triggers[i].isConditionTrue(multiSelectRemovedValue) && this.logicalOperator === 'OR') { // first TRUE we hit, we're done checking
+    else if (triggers[i].isConditionTrue() && this.logicalOperator === 'OR') { // first TRUE we hit, we're done checking
       return true;
     }
     else if (i === last) { // last element, if FALSE, we don't show because AND/OR fails 
-      return triggers[i].isConditionTrue(multiSelectRemovedValue);
+      return triggers[i].isConditionTrue();
     }
   }
 };
