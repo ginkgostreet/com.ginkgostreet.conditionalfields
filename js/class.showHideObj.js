@@ -47,10 +47,10 @@ showHideObj.prototype.setLogicalOperator = function(operatorString) {
 showHideObj.prototype.toggleShowHide = function() {
   
   console.log("in toggleShowHide - element");
-  console.log(this.showHideElement);
+  console.log(this);
   console.log(this.testTriggers);
   
-  (this.testTriggers()) ? this.showHideElement.show() : this.showHideElement.hide();
+  
   
 };
 
@@ -98,6 +98,12 @@ showHideObj.prototype.addTrigger = function(triggerObject) {
   this.triggerObjectsArray.push(triggerObject);
 };
 
+
+showHideObj.prototype.getShowHideFunction = function() {
+  var sho = this;
+  return function() {return (sho.testTriggers()) ? sho.showHideElement.show() : sho.showHideElement.hide(); };
+};
+
 /**
  * Binds DOM events to the showHide object in order to run the toggleShowHide function
  * upon the appropriate action taken on each individual Trigger object.
@@ -105,8 +111,11 @@ showHideObj.prototype.addTrigger = function(triggerObject) {
  */
 showHideObj.prototype.listenToTriggers = function() {
   
+  var sho = this;
+  
   var bindTriggers = function(index, trigger) {
-    trigger.inputElement.bind(trigger.bindEvent, this.toggleShowHide);
+    trigger.inputElement.bind(trigger.bindEvent, 
+      function() {return (sho.testTriggers()) ? sho.showHideElement.show() : sho.showHideElement.hide(); });
   }.bind(this);
   
   cj.each(this.triggerObjectsArray, bindTriggers);
