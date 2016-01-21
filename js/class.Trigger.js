@@ -28,6 +28,8 @@ function Trigger(config) {
   this.initializeInputTypeAndGetter();
 }
 
+Trigger.prototype.bindEvent = "change";
+
 /**
  * If the Trigger itself is unable to properly determine the inputType during its construction,
  * the inputType can be set manually by using this function.

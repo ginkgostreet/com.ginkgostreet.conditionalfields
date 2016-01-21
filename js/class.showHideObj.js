@@ -1,11 +1,11 @@
 /**
  * Constructor for this class.
  * 
- * @param toggleObject jQueryObject - result of a jQuery selector to be shown or hidden
+ * @param showHideElement jQueryObject - result of a jQuery selector to be shown or hidden
  * e.g. cj("input#CIVICRM_QFID_0_34").closest('div.price-set-row')
  */
-function showHideObj(toggleObject) {
-  this.toggleObject = toggleObject;
+function showHideObj(showHideElement) {
+  this.showHideElement = showHideElement;
   this.triggerObjectsArray = new Array;
   this.logicalOperator = 'AND';
 }
@@ -22,6 +22,7 @@ function showHideObj(toggleObject) {
  * Any unsupported value will result in an error being logged to the console,
  * and the current logicalOperator will remain in effect.
  * 
+ * 
  */
 showHideObj.prototype.setLogicalOperator = function(operatorString) {
   operatorString = operatorString.toUpperCase();
@@ -35,7 +36,7 @@ showHideObj.prototype.setLogicalOperator = function(operatorString) {
 };
 
 /**
- * Shows or hides this.toggleObject based upon Trigger logic and configuration of this object.
+ * Shows or hides this.showHideElement based upon Trigger logic and configuration of this object.
  * 
  * @param multiSelectRemovedValue string - optionally passed from bindEvents IFF we are dealing with a multi-select
  * 
@@ -43,15 +44,19 @@ showHideObj.prototype.setLogicalOperator = function(operatorString) {
  * 
  * 
  */
-showHideObj.prototype.toggleShowHide = function(multiSelectRemovedValue) {
+showHideObj.prototype.toggleShowHide = function() {
   
-  this.shouldBeShown(multiSelectRemovedValue) ? this.show() : this.hide();
+  console.log("in toggleShowHide - element");
+  console.log(this.showHideElement);
+  console.log(this.testTriggers);
+  
+  (this.testTriggers()) ? this.showHideElement.show() : this.showHideElement.hide();
   
 };
 
 
 /**
- * Loops through each Trigger and evaluates whether or not to show or hide this.toggleObject,
+ * Loops through each Trigger and evaluates whether or not to show or hide this.showHideElement,
  * based upon the logicalOperator.
  * 
  * @param multiSelectRemovedValue string - optionally passed from toggleShowHide IFF we are dealing with a multi-select
@@ -60,7 +65,7 @@ showHideObj.prototype.toggleShowHide = function(multiSelectRemovedValue) {
  * 
  * 
  */
-showHideObj.prototype.shouldBeShown = function() {
+showHideObj.prototype.testTriggers = function() {
   
   var triggers = this.triggerObjectsArray;
   var len = triggers.length;
@@ -90,13 +95,7 @@ showHideObj.prototype.shouldBeShown = function() {
  * 
  */
 showHideObj.prototype.addTrigger = function(triggerObject) {
-  if(triggerObject.constructor === Trigger) {
-    this.triggerObjectsArray.push(triggerObject);
-  }
-  else {
-    console.log("Invalid triggerObject (below): ");
-    console.log(triggerObject);
-  }
+  this.triggerObjectsArray.push(triggerObject);
 };
 
 /**
@@ -104,32 +103,13 @@ showHideObj.prototype.addTrigger = function(triggerObject) {
  * upon the appropriate action taken on each individual Trigger object.
  *  
  */
-showHideObj.prototype.bindEvents = function() {
+showHideObj.prototype.listenToTriggers = function() {
   
-  var triggers = this.triggerObjectsArray;
-  var len = triggers.length;
+  var bindTriggers = function(index, trigger) {
+    trigger.inputElement.bind(trigger.bindEvent, this.toggleShowHide);
+  }.bind(this);
   
-  for(i = 0; i < len; i++) {
-    
-    var el = triggers[i].inputElement;
-      
-    if(el.inputType === 'multi-select') {
-      
-      el.bind('DOMNodeInserted', function() {
-        this.toggleShowHide();
-      });
-      
-      el.bind('DOMNodeRemoved', function(e){
-        var removedMultiSelectElementValue = $(e.target).attr('value');
-        this.toggleShowHide(removedMultiSelectElementValue);
-      });
-    } 
-    else {
-      el.change(function() {
-       this.toggleShowHide();
-      });
-    }
-  }
+  cj.each(this.triggerObjectsArray, bindTriggers);
 };
 
 showHideObj.prototype.unsetValue = function() {
