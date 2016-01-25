@@ -94,7 +94,7 @@ showHideObj.prototype.listenToTriggers = function() {
   var sho = this;
   
   var bindTriggers = function(index, trigger) {
-    trigger.inputElement.bind(trigger.bindEvent, sho.getShowHideFunction()).bind(trigger);
+    trigger.inputElement.bind(trigger.bindEvent, sho.getShowHideFunction());
   };
     
   cj.each(sho.triggerObjectsArray, bindTriggers);
