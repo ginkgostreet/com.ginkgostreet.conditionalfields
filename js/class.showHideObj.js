@@ -98,7 +98,6 @@ showHideObj.prototype.listenToTriggers = function() {
   };
     
   cj.each(sho.triggerObjectsArray, bindTriggers);
-  sho.getShowHideFunction().call();
 };
 
 /*
