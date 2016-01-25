@@ -20,9 +20,6 @@
  * 
  */
 function Trigger(config) {
-  /*this.inputElement = undefined;
-  this.showValue = undefined;
-  this.inputType = undefined;*/
   this.isConditionTrue = this.defaultTest;
   cj.extend(this, config);
   this.initializeInputTypeAndGetter();

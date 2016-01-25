@@ -36,26 +36,6 @@ showHideObj.prototype.setLogicalOperator = function(operatorString) {
 };
 
 /**
- * Shows or hides this.showHideElement based upon Trigger logic and configuration of this object.
- * 
- * @param multiSelectRemovedValue string - optionally passed from bindEvents IFF we are dealing with a multi-select
- * 
- * @return result - true or false
- * 
- * 
- */
-showHideObj.prototype.toggleShowHide = function() {
-  
-  console.log("in toggleShowHide - element");
-  console.log(this);
-  console.log(this.testTriggers);
-  
-  
-  
-};
-
-
-/**
  * Loops through each Trigger and evaluates whether or not to show or hide this.showHideElement,
  * based upon the logicalOperator.
  * 
@@ -114,24 +94,13 @@ showHideObj.prototype.listenToTriggers = function() {
   var sho = this;
   
   var bindTriggers = function(index, trigger) {
-    trigger.inputElement.bind(trigger.bindEvent, 
-      function() {return (sho.testTriggers()) ? sho.showHideElement.show() : sho.showHideElement.hide(); });
-  }.bind(this);
-  
-  cj.each(this.triggerObjectsArray, bindTriggers);
+    trigger.inputElement.bind(trigger.bindEvent, sho.getShowHideFunction()).bind(trigger);
+  };
+    
+  cj.each(sho.triggerObjectsArray, bindTriggers);
+  sho.getShowHideFunction().call();
 };
 
-showHideObj.prototype.unsetValue = function() {
-  var field = cj('[name=' + this.elementName + ']');
-  // special case for advanced multiselects
-  if(field.is('select[multiple=multiple]')) {
-    console.log('Tried to unset value on multiselect; this functionality is not yet implemented');
-  } else if (field.is(':checkbox, :radio')) {
-    field.prop('checked', false);
-  } else {
-    field.val('');
-  }
-};
 /*
 ////////////////////////////////////////////////
   // you shouldn't need to edit below this line //
@@ -171,5 +140,17 @@ showHideObj.prototype.unsetValue = function() {
       });
     }
   });
+  
+  showHideObj.prototype.unsetValue = function() {
+  var field = cj('[name=' + this.elementName + ']');
+  // special case for advanced multiselects
+  if(field.is('select[multiple=multiple]')) {
+    console.log('Tried to unset value on multiselect; this functionality is not yet implemented');
+  } else if (field.is(':checkbox, :radio')) {
+    field.prop('checked', false);
+  } else {
+    field.val('');
+  }
+};
 
   */
