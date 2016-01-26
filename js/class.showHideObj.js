@@ -59,7 +59,7 @@ showHideObj.prototype.testTriggers = function() {
     else if (triggers[i].isConditionTrue() && this.logicalOperator === 'OR') { // first TRUE we hit, we're done checking
       return true;
     }
-    else if (i === last) { // last element, if FALSE, we don't show because AND/OR fails 
+    else if (i === last) { // last element, if FALSE, we don't show because AND/OR fails  
       return triggers[i].isConditionTrue();
     }
   }
@@ -78,27 +78,6 @@ showHideObj.prototype.addTrigger = function(triggerObject) {
   this.triggerObjectsArray.push(triggerObject);
 };
 
-
-showHideObj.prototype.getShowHideFunction = function() {
-  var sho = this;
-  return function() {return (sho.testTriggers()) ? sho.showHideElement.show() : sho.showHideElement.hide(); };
-};
-
-/**
- * Binds DOM events to the showHide object in order to run the toggleShowHide function
- * upon the appropriate action taken on each individual Trigger object.
- *  
- */
-showHideObj.prototype.listenToTriggers = function() {
-  
-  var sho = this;
-  
-  var bindTriggers = function(index, trigger) {
-    trigger.inputElement.bind(trigger.bindEvent, sho.getShowHideFunction());
-  };
-    
-  cj.each(sho.triggerObjectsArray, bindTriggers);
-};
 
 /*
 ////////////////////////////////////////////////
