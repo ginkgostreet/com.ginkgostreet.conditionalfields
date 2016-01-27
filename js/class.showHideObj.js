@@ -1,29 +1,9 @@
-/**
- * Constructor for this class.
- * 
- * @param showHideElement jQueryObject - result of a jQuery selector to be shown or hidden
- * e.g. cj("input#CIVICRM_QFID_0_34").closest('div.price-set-row')
- */
 function showHideObj(showHideElement) {
   this.showHideElement = showHideElement;
   this.triggerObjectsArray = new Array;
   this.logicalOperator = 'AND';
 }
 
-/**
- * Sets the logical operator to apply to all trigger objects.
- * NOTE: By default, the logical operator is set to 'AND' in the constructor.
- * 
- * If 'AND', then all conditions must be met to show this showHideObject.
- * If 'OR', then only one condition must be met to show this showHideObject.
- * 
- * @param operatorString string - either 'AND' or 'OR', case insensitive
- * 
- * Any unsupported value will result in an error being logged to the console,
- * and the current logicalOperator will remain in effect.
- * 
- * 
- */
 showHideObj.prototype.setLogicalOperator = function(operatorString) {
   operatorString = operatorString.toUpperCase();
   if((operatorString === 'AND') || (operatorString === 'OR')) {
@@ -35,16 +15,6 @@ showHideObj.prototype.setLogicalOperator = function(operatorString) {
     
 };
 
-/**
- * Loops through each Trigger and evaluates whether or not to show or hide this.showHideElement,
- * based upon the logicalOperator.
- * 
- * @param multiSelectRemovedValue string - optionally passed from toggleShowHide IFF we are dealing with a multi-select
- * 
- * @return result - true or false
- * 
- * 
- */
 showHideObj.prototype.testTriggers = function() {
   
   var triggers = this.triggerObjectsArray;
@@ -65,70 +35,6 @@ showHideObj.prototype.testTriggers = function() {
   }
 };
 
-/**
- * Adds a trigger object.
- * 
- * @param triggerObject Trigger - see the Trigger class for details about creating a Trigger object
- * 
- * Any invalid object result in an error being logged to the console,
- * and the object will not be added to this.triggerObjectsArray.
- * 
- */
 showHideObj.prototype.addTrigger = function(triggerObject) {
   this.triggerObjectsArray.push(triggerObject);
 };
-
-
-/*
-////////////////////////////////////////////////
-  // you shouldn't need to edit below this line //
-  ////////////////////////////////////////////////
-  // parse show/hide rules
-  var showHideObjArr = {};
-  $.each(showHideRules, function(index, obj) {
-    // register triggers for each dependent
-    $.each(obj.dependents, function(i, dependentName) {
-      if (!showHideObjArr.hasOwnProperty(dependentName)) {
-        showHideObjArr[dependentName] = new showHideObj(dependentName);
-      }
-      showHideObjArr[dependentName].registerTrigger(obj.name, obj.value);
-    });
-
-    // wire up the fields that trigger the show/hide behavior
-    var el = $('[name="' + obj.name + '"]');
-
-    // special case for advanced multiselects
-    if(el.is('select[multiple=multiple]')) {
-      el.bind('DOMNodeInserted', function(){
-        $.each(obj.dependents, function(i, dep) {
-          showHideObjArr[dep].toggle();
-        });
-      });
-      el.bind('DOMNodeRemoved', function(e){
-        var removedEl = e.target;
-        $.each(obj.dependents, function(i, dep) {
-          showHideObjArr[dep].toggle($(removedEl).attr('value'));
-        });
-      });
-    } else {
-      el.change(function() {
-        $.each(obj.dependents, function(i, dep) {
-          showHideObjArr[dep].toggle();
-        });
-      });
-    }
-  });
-  
-  showHideObj.prototype.unsetValue = function() {
-  var field = cj('[name=' + this.elementName + ']');
-  // special case for advanced multiselects
-  if(field.is('select[multiple=multiple]')) {
-    console.log('Tried to unset value on multiselect; this functionality is not yet implemented');
-  } else if (field.is(':checkbox, :radio')) {
-    field.prop('checked', false);
-  } else {
-    field.val('');
-  }
-};
-
-  */
