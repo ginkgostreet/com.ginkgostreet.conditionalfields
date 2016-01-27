@@ -26,7 +26,7 @@ showHideCollection.prototype.getShowHideFunction = function() {
   
   return function() {
     cj.each(shoa, function(index, sho) {
-      (sho.testTriggers()) ? sho.showHideElement.show() : sho.showHideElement.hide(); 
+      (sho.testTriggers()) ? sho.showHideElementsArray.forEach(function(el) {el.show(); }) :  sho.showHideElementsArray.forEach(function(el) {el.hide(); }); 
     });
   };
 };

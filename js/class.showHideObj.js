@@ -1,5 +1,5 @@
-function showHideObj(showHideElement) {
-  this.showHideElement = showHideElement;
+function showHideObj(showHideElementsArrray) {
+  this.showHideElementsArray = showHideElementsArrray;
   this.triggerObjectsArray = new Array;
   this.logicalOperator = 'AND';
 }
