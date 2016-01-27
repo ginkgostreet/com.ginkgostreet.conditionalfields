@@ -8,9 +8,9 @@ In this example, we have a contribution page, of the class CRM_Contribute_Form_C
 
 _The following javascript file is therefore placed in following location:_
 
-<custom_extension_root>/js/CRM_Contribute_Form_Contribution_Main/2.js
+*custom_extension_root*/js/CRM_Contribute_Form_Contribution_Main/2.js
 
-where *<custom_extension_root>* is the directory of the custom extension being developed to use this Conditional Fields extension.
+where *custom_extension_root* is the directory of the custom extension being developed to use this Conditional Fields extension.
 
 
 ```javascript
