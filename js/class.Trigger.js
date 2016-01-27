@@ -14,13 +14,13 @@ Trigger.prototype.setInputType = function (inputType) {
 
 Trigger.prototype.initializeInputTypeAndGetter = function() {
   
-  var inputElement = this.inputElement;
+  var el = this.inputElement;
   
-  if(inputElement.is(':checkbox')) {
+  if(el.is(':checkbox')) {
     this.inputType = 'checkbox';
     this.getElementState = this.getCheckboxOrRadioState;
   }
-  else if(inputElement.is(':radio')) {
+  else if(el.is(':radio')) {
     this.inputType = 'radio';
     this.getElementState = this.getCheckboxOrRadioState;
   }
