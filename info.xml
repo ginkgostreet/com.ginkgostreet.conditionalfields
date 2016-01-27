@@ -31,7 +31,7 @@
       1) implements hook_civicrm_conditionalField(), and
       2) provides show/hide configs in files matching the following pattern:
          {$EXT_ROOT}/js/{$FORM_NAME}/{$ENTITY_ID}.js
-      3) The README.txt file contains a sample javascript implementation.
+      3) The README.md file contains a sample javascript implementation.
   </comments>
   <civix>
     <namespace>CRM/Conditionalfields</namespace>
