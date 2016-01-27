@@ -38,3 +38,23 @@ showHideObj.prototype.testTriggers = function() {
 showHideObj.prototype.addTrigger = function(triggerObject) {
   this.triggerObjectsArray.push(triggerObject);
 };
+
+showHideObj.prototype.listenToTriggers = function() {
+  
+  var sho = this;
+  
+  var bindTriggers = function(index, trigger) {
+    trigger.inputElement.bind(trigger.bindEvent, sho.getShowHideFunction());
+  };
+
+  cj.each(sho.triggerObjectsArray, bindTriggers);
+ 
+};
+
+showHideObj.prototype.getShowHideFunction = function() {
+  var sho = this;
+  
+  return function() {
+    (sho.testTriggers()) ? sho.showHideElementsArray.forEach(function(el) {el.show(); }) :  sho.showHideElementsArray.forEach(function(el) {el.hide(); }); 
+  };
+};
