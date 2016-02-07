@@ -1,33 +1,78 @@
 function showHideObj(showHideElements) {
-  if (showHideElements instanceof Array) {
-    this.showHideElementsArray = showHideElements;
+
+  this.showHideElementsArray = [];
+
+  if (isString(showHideElements)) {
+    this.addShowHideElementFromstring(showHideElements);
   }
-  else if (showHideElements instanceof String) {
-    if (cj(showHideElements).length) {
-      this.showHideElementsArray = [];
-      this.showHideElementsArray.push(cj(showHideElements));
-    }
-    else {
-      console.log("Invalid constructor argument: " + showHideElements.toString());
-    }
+  else if (isJQueryObject(showHideElements)) {
+    this.addShowHideElementFromJQuery(showHideElements);
+  }
+  else if (showHideElements instanceof Array) {
+    this.addShowHideElementFromArray(showHideElements);
   }
   else {
-    console.log("Invalid constructor argument. Requires string or valid jQuery selector, or array of jQuery selectors.");
+    this.logInvalidConstructorArgument(showHideElements);
   }
 
   this.triggerObjectsArray = new Array;
   this.logicalOperator = 'AND';
 }
 
-showHideObj.prototype.setLogicalOperator = function(operatorString) {
-  operatorString = operatorString.toUpperCase();
-  if((operatorString === 'AND') || (operatorString === 'OR')) {
-    this.logicalOperator = operatorString;
+showHideObj.prototype.setLogicalOperator = function (operatorstring) {
+  operatorstring = operatorstring.toUpperCase();
+  if ((operatorstring === 'AND') || (operatorstring === 'OR')) {
+    this.logicalOperator = operatorstring;
   }
   else {
-    console.log("Invalid operatorString: " + operatorString);
+    console.log("Invalid operatorstring: " + operatorstring);
   }
     
+};
+
+showHideObj.prototype.addShowHideElementFromstring = function (str) {
+  if (cj(str).length)
+    this.showHideElementsArray.push(cj(str));
+  else
+    console.log("Invalid string Used as jQuery Selector - No Results: " + str);
+};
+
+showHideObj.prototype.addShowHideElementFromJQuery = function (jqueryobj) {
+  if (jqueryobj.length)
+    this.showHideElementsArray.push(jqueryobj);
+  else
+    console.log("Invalid jQuery Selector - No Results: " + jqueryobj);
+};
+
+showHideObj.prototype.addShowHideElementFromArray = function (arr) {
+  if (!arr.length)
+    console.log("Invalid Empty Array - No Results");
+  else {
+      arr.forEach(function (entry) {
+      if (isJQueryObject(entry))
+        this.addShowHideElementFromJQuery(entry);
+      else if (isString(entry))
+        this.addShowHideElementFromstring(entry);
+      else {
+        console.log("Invalid Array Entry");
+        this.logInvalidConstructorArgument(entry);
+      }
+    }, this);
+  }
+};
+
+showHideObj.prototype.logInvalidConstructorArgument = function (arg) {
+  console.log("Invalid showHideElements object type passed to ShowHideObj constructor: " + typeof(arg));
+  console.log(arg);
+  console.log("Allowed: string, string[], jQuery, or jQuery[].");
+};
+
+var isString = function (str) {
+  return ((typeof (str) === "string") || (str instanceof String));
+};
+
+var isJQueryObject = function (obj) {
+  return (obj && (obj instanceof jQuery || obj.constructor.prototype.jquery));
 };
 
 showHideObj.prototype.testTriggers = function() {
