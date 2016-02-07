@@ -1,4 +1,4 @@
-function showHideObj(showHideElements) {
+function ShowHideObj(showHideElements) {
 
   this.showHideElementsArray = [];
 
@@ -19,7 +19,7 @@ function showHideObj(showHideElements) {
   this.logicalOperator = 'AND';
 }
 
-showHideObj.prototype.setLogicalOperator = function (operatorstring) {
+ShowHideObj.prototype.setLogicalOperator = function (operatorstring) {
   operatorstring = operatorstring.toUpperCase();
   if ((operatorstring === 'AND') || (operatorstring === 'OR')) {
     this.logicalOperator = operatorstring;
@@ -30,21 +30,21 @@ showHideObj.prototype.setLogicalOperator = function (operatorstring) {
     
 };
 
-showHideObj.prototype.addShowHideElementFromstring = function (str) {
+ShowHideObj.prototype.addShowHideElementFromstring = function (str) {
   if (cj(str).length)
     this.showHideElementsArray.push(cj(str));
   else
     console.log("Invalid string Used as jQuery Selector - No Results: " + str);
 };
 
-showHideObj.prototype.addShowHideElementFromJQuery = function (jqueryobj) {
+ShowHideObj.prototype.addShowHideElementFromJQuery = function (jqueryobj) {
   if (jqueryobj.length)
     this.showHideElementsArray.push(jqueryobj);
   else
     console.log("Invalid jQuery Selector - No Results: " + jqueryobj);
 };
 
-showHideObj.prototype.addShowHideElementFromArray = function (arr) {
+ShowHideObj.prototype.addShowHideElementFromArray = function (arr) {
   if (!arr.length)
     console.log("Invalid Empty Array - No Results");
   else {
@@ -61,7 +61,7 @@ showHideObj.prototype.addShowHideElementFromArray = function (arr) {
   }
 };
 
-showHideObj.prototype.logInvalidConstructorArgument = function (arg) {
+ShowHideObj.prototype.logInvalidConstructorArgument = function (arg) {
   console.log("Invalid showHideElements object type passed to ShowHideObj constructor: " + typeof(arg));
   console.log(arg);
   console.log("Allowed: string, string[], jQuery, or jQuery[].");
@@ -75,7 +75,7 @@ var isJQueryObject = function (obj) {
   return (obj && (obj instanceof jQuery || obj.constructor.prototype.jquery));
 };
 
-showHideObj.prototype.testTriggers = function() {
+ShowHideObj.prototype.testTriggers = function() {
   
   var triggers = this.triggerObjectsArray;
   var len = triggers.length;
@@ -95,11 +95,11 @@ showHideObj.prototype.testTriggers = function() {
   }
 };
 
-showHideObj.prototype.addTrigger = function(triggerObject) {
+ShowHideObj.prototype.addTrigger = function(triggerObject) {
   this.triggerObjectsArray.push(triggerObject);
 };
 
-showHideObj.prototype.listenToTriggers = function() {
+ShowHideObj.prototype.listenToTriggers = function() {
   
   var sho = this;
   
@@ -111,7 +111,7 @@ showHideObj.prototype.listenToTriggers = function() {
  
 };
 
-showHideObj.prototype.getShowHideFunction = function() {
+ShowHideObj.prototype.getShowHideFunction = function() {
   var sho = this;
   
   return function() {
