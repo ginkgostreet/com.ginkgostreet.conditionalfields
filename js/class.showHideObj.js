@@ -17,6 +17,7 @@ function ShowHideObj(showHideElements) {
 
   this.triggerObjectsArray = new Array;
   this.logicalOperator = 'AND';
+  this.getShowHideFunction = this.defaultShowHide;
 }
 
 ShowHideObj.prototype.setLogicalOperator = function (operatorstring) {
@@ -111,10 +112,20 @@ ShowHideObj.prototype.listenToTriggers = function() {
  
 };
 
-ShowHideObj.prototype.getShowHideFunction = function() {
+ShowHideObj.prototype.defaultShowHide = function() {
   var sho = this;
   
   return function() {
     (sho.testTriggers()) ? sho.showHideElementsArray.forEach(function(el) {el.show(); }) :  sho.showHideElementsArray.forEach(function(el) {el.hide(); }); 
+  };
+};
+
+ShowHideObj.prototype.radioShowHide = function() {
+  var sho = this;
+
+  return function() {
+    (sho.testTriggers())
+      ? sho.showHideElementsArray.forEach(function(el) {el.show(); el.find(":radio").attr("checked", false);})
+      : sho.showHideElementsArray.forEach(function(el) {el.hide(); el.find(":radio").attr("checked", false);});
   };
 };
