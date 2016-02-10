@@ -81,6 +81,7 @@ cj(function($) {
 
   var sh = new ShowHideObj(showHideCheckPaymentSelectors);
   sh.addTrigger(triggerCheckPaymentTypeChecked);
+  sh.getShowHideFunction = sh.radioShowHide;
 
   $.each(creditPricesInputbyID, function(index, selectorString) {
     showHideCreditPaymentSelectors.push(cj(selectorString).first().closest('div.price-set-row'));
@@ -88,6 +89,7 @@ cj(function($) {
 
   var sh2 = new ShowHideObj(showHideCreditPaymentSelectors);
   sh2.addTrigger(triggerCreditPaymentTypeChecked);
+  sh2.getShowHideFunction = sh.radioShowHide;
 
   sh.listenToTriggers();
   sh.getShowHideFunction().call();
