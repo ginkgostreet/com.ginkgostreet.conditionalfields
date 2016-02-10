@@ -1,78 +1,131 @@
-function showHideObj (name) {
-  this.elementName = name;
-  // the element to be shown/hidden; this is a jQuery object
-  this.element = cj('[name="' + name + '"]').first().closest('.crm-section');
-  // array of objects specifying a list form elements/values, any of which will result in a show
-  this.triggers = [];
+function ShowHideObj(showHideElements) {
+
+  this.showHideElementsArray = [];
+
+  if (isString(showHideElements)) {
+    this.addShowHideElementFromstring(showHideElements);
+  }
+  else if (isJQueryObject(showHideElements)) {
+    this.addShowHideElementFromJQuery(showHideElements);
+  }
+  else if (showHideElements instanceof Array) {
+    this.addShowHideElementFromArray(showHideElements);
+  }
+  else {
+    this.logInvalidConstructorArgument(showHideElements);
+  }
+
+  this.triggerObjectsArray = new Array;
+  this.logicalOperator = 'AND';
+  this.getShowHideFunction = this.defaultShowHide;
 }
 
-/**
- * @param fieldName string - name of triggering field
- * @param value string - name of triggering value
- */
-showHideObj.prototype.registerTrigger = function(fieldName, value) {
-  this.triggers.push({name:fieldName, value:value});
+ShowHideObj.prototype.setLogicalOperator = function (operatorstring) {
+  operatorstring = operatorstring.toUpperCase();
+  if ((operatorstring === 'AND') || (operatorstring === 'OR')) {
+    this.logicalOperator = operatorstring;
+  }
+  else {
+    console.log("Invalid operatorstring: " + operatorstring);
+  }
+    
 };
 
-/**
- * @param removedVal string - This is a bit of a hack to account for the fact
- *                            that DOMNodeRemoved fires *before* the node is
- *                            removed, making it impossible to rely on the DOM
- *                            for information about de-selected options in an
- *                            advanced multiselect context.
- */
-showHideObj.prototype.toggle = function(removedVal) {
-  var SHO = this;
-  var ruleApplied = false;
-  cj.each(SHO.triggers, function(i, trigger) {
-    var triggerEl = cj('[name="' + trigger.name + '"]');
+ShowHideObj.prototype.addShowHideElementFromstring = function (str) {
+  if (cj(str).length)
+    this.showHideElementsArray.push(cj(str));
+  else
+    console.log("Invalid string Used as jQuery Selector - No Results: " + str);
+};
 
-    // special case for advanced multiselects
-    if(triggerEl.is('select[multiple=multiple]')) {
-      if(
-        triggerEl.children('option[value="' + trigger.value + '"]').length &&
-        removedVal !== trigger.value
-      ) {
-        SHO.element.show(1000);
-        ruleApplied = true;
-        return false;
+ShowHideObj.prototype.addShowHideElementFromJQuery = function (jqueryobj) {
+  if (jqueryobj.length)
+    this.showHideElementsArray.push(jqueryobj);
+  else
+    console.log("Invalid jQuery Selector - No Results: " + jqueryobj);
+};
+
+ShowHideObj.prototype.addShowHideElementFromArray = function (arr) {
+  if (!arr.length)
+    console.log("Invalid Empty Array - No Results");
+  else {
+      arr.forEach(function (entry) {
+      if (isJQueryObject(entry))
+        this.addShowHideElementFromJQuery(entry);
+      else if (isString(entry))
+        this.addShowHideElementFromstring(entry);
+      else {
+        console.log("Invalid Array Entry");
+        this.logInvalidConstructorArgument(entry);
       }
-    } else if (triggerEl.is(':checkbox, :radio')) {
-      if (
-        // allows an unchecked checkbox to be used as a trigger
-        (
-          trigger.value === undefined
-          && cj(triggerEl).filter(':checked').length === 0
-        )
-        // standard check: if checked box has the value, show the dependent
-        || cj(triggerEl).filter(':checked[value=' + trigger.value + ']').length) {
-        SHO.element.show(1000);
-        ruleApplied = true;
-        return false;
-      }
-    } else {
-      if (cj(triggerEl).val() === trigger.value) {
-        SHO.element.show(1000);
-        ruleApplied = true;
-        return false;
-      }
+    }, this);
+  }
+};
+
+ShowHideObj.prototype.logInvalidConstructorArgument = function (arg) {
+  console.log("Invalid showHideElements object type passed to ShowHideObj constructor: " + typeof(arg));
+  console.log(arg);
+  console.log("Allowed: string, string[], jQuery, or jQuery[].");
+};
+
+var isString = function (str) {
+  return ((typeof (str) === "string") || (str instanceof String));
+};
+
+var isJQueryObject = function (obj) {
+  return (obj && (obj instanceof jQuery || obj.constructor.prototype.jquery));
+};
+
+ShowHideObj.prototype.testTriggers = function() {
+  
+  var triggers = this.triggerObjectsArray;
+  var len = triggers.length;
+  var last = len - 1;
+  
+  for(i = 0; i < len; i++) {
+       
+    if(!triggers[i].isConditionTrue() && this.logicalOperator === 'AND') { // first FALSE we hit, we're done checking
+      return false;
     }
-  });
-
-  if (!ruleApplied) {
-    this.unsetValue();
-    this.element.hide(1000);
+    else if (triggers[i].isConditionTrue() && this.logicalOperator === 'OR') { // first TRUE we hit, we're done checking
+      return true;
+    }
+    else if (i === last) { // last element, if FALSE, we don't show because AND/OR fails  
+      return triggers[i].isConditionTrue();
+    }
   }
 };
 
-showHideObj.prototype.unsetValue = function() {
-  var field = cj('[name=' + this.elementName + ']');
-  // special case for advanced multiselects
-  if(field.is('select[multiple=multiple]')) {
-    console.log('Tried to unset value on multiselect; this functionality is not yet implemented');
-  } else if (field.is(':checkbox, :radio')) {
-    field.prop('checked', false);
-  } else {
-    field.val('');
-  }
+ShowHideObj.prototype.addTrigger = function(triggerObject) {
+  this.triggerObjectsArray.push(triggerObject);
+};
+
+ShowHideObj.prototype.listenToTriggers = function() {
+  
+  var sho = this;
+  
+  var bindTriggers = function(index, trigger) {
+    trigger.inputElement.bind(trigger.bindEvent, sho.getShowHideFunction());
+  };
+
+  cj.each(sho.triggerObjectsArray, bindTriggers);
+ 
+};
+
+ShowHideObj.prototype.defaultShowHide = function() {
+  var sho = this;
+  
+  return function() {
+    (sho.testTriggers()) ? sho.showHideElementsArray.forEach(function(el) {el.show(); }) :  sho.showHideElementsArray.forEach(function(el) {el.hide(); }); 
+  };
+};
+
+ShowHideObj.prototype.radioShowHide = function() {
+  var sho = this;
+
+  return function() {
+    (sho.testTriggers())
+      ? sho.showHideElementsArray.forEach(function(el) {el.show(); el.find(":radio").attr("checked", false);})
+      : sho.showHideElementsArray.forEach(function(el) {el.hide(); el.find(":radio").attr("checked", false);});
+  };
 };
