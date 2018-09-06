@@ -1,5 +1,5 @@
 Package: com.ginkgostreet.conditionalfields
-Copyright (C) 2014, Frank J. Gómez <frank@ginkgostreet.com>
+Copyright (C) 2018, ginkgoMZD <mzd@ginkgostreet.com>
 Licensed under the GNU Affero Public License 3.0 (below).
 
 -------------------------------------------------------------------------------
