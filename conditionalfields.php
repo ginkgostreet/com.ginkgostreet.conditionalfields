@@ -4,6 +4,56 @@ require_once 'conditionalfields.civix.php';
 use CRM_Conditionalfields_ExtensionUtil as E;
 
 /**
+ * Implementation of hook_civicrm_buildForm
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_buildForm
+ */
+function conditionalfields_civicrm_buildForm($formName, &$form){
+  // make sure this doesn't get loaded more than once
+  static $loaded = FALSE;
+  $extensions = array();
+  CRM_Conditionalfields_Hook::conditionalFields($extensions);
+//  var_dump($form->get('id'));
+  $jsToLoad = array();
+  foreach ($extensions as $ext) {
+    // look for implementations by form ID
+    // make sure the file exists
+    $entId = $form->get('id');
+    if (is_null($entId)) continue;
+    $baseDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath($ext);
+    $js_file = "js/{$formName}/{$entId}.js";
+    if (file_exists($baseDir . '/' . $js_file)) {
+      $jsToLoad[$ext] = $js_file;
+    }
+  }
+  if (!empty($jsToLoad) && !$loaded) {
+    $loaded = TRUE;
+    $ccr = CRM_Core_Resources::singleton();
+    $ccr->addScriptFile('com.ginkgostreet.conditionalfields', "js/class.showHideObj.js");
+    foreach ($jsToLoad as $ext => $path) {
+      $ccr->addScriptFile($ext, $path);
+    }
+  }
+}
+/**
+ * Helper function to deal with inconsistency in assigning IDs to forms
+ *
+ * @param CRM_Core_Form $form
+ * @return string The ID of the entity (e.g., Contribution, Event) represented in the form
+ * @throws Exception
+ */
+function _conditionalfields_getEntityID(CRM_Core_Form $form) {
+  if (is_a($form, 'CRM_Contribute_Form') || is_a($form, 'CRM_Contribute_Form_ContributionBase')) {
+    return $form->_id;
+  }
+  if (is_a($form, 'CRM_Event_Form_Registration')) {
+    return $form->_eventId;
+  }
+  CRM_Core_Error::debug_log_message('com.ginkgostreet.conditionalfields: Unable to get the entity ID for form ' . get_class($form));
+  return NULL;
+}
+
+/**
  * Implements hook_civicrm_config().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
@@ -124,59 +174,40 @@ function conditionalfields_civicrm_alterSettingsFolders(&$metaDataFolders = NULL
 }
 
 /**
- * Implementation of hook_civicrm_buildForm
+ * Implements hook_civicrm_entityTypes().
  *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_buildForm
+ * Declare entity types provided by this module.
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_entityTypes
  */
-function conditionalfields_civicrm_buildForm($formName, &$form){
-  // make sure this doesn't get loaded more than once
-  static $loaded = FALSE;
-
-  $extensions = array();
-  CRM_Conditionalfields_Hook::conditionalFields($extensions);
-//  var_dump($form->get('id'));
-
-  $jsToLoad = array();
-  foreach ($extensions as $ext) {
-    // look for implementations by form ID
-    // make sure the file exists
-    $entId = $form->get('id');
-    if (is_null($entId)) continue;
-    $baseDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath($ext);
-    $js_file = "js/{$formName}/{$entId}.js";
-    if (file_exists($baseDir . '/' . $js_file)) {
-      $jsToLoad[$ext] = $js_file;
-    }
-  }
-
-  if (!empty($jsToLoad) && !$loaded) {
-    $loaded = TRUE;
-
-    $ccr = CRM_Core_Resources::singleton();
-    $ccr->addScriptFile('com.ginkgostreet.conditionalfields', "js/class.showHideObj.js");
-
-    foreach ($jsToLoad as $ext => $path) {
-      $ccr->addScriptFile($ext, $path);
-    }
-  }
+function conditionalfields_civicrm_entityTypes(&$entityTypes) {
+  _conditionalfields_civix_civicrm_entityTypes($entityTypes);
 }
+
+// --- Functions below this ship commented out. Uncomment as required. ---
 
 /**
- * Helper function to deal with inconsistency in assigning IDs to forms
+ * Implements hook_civicrm_preProcess().
  *
- * @param CRM_Core_Form $form
- * @return string The ID of the entity (e.g., Contribution, Event) represented in the form
- * @throws Exception
- */
-function _conditionalfields_getEntityID(CRM_Core_Form $form) {
-  if (is_a($form, 'CRM_Contribute_Form') || is_a($form, 'CRM_Contribute_Form_ContributionBase')) {
-    return $form->_id;
-  }
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_preProcess
+ *
+function conditionalfields_civicrm_preProcess($formName, &$form) {
 
-  if (is_a($form, 'CRM_Event_Form_Registration')) {
-    return $form->_eventId;
-  }
+} // */
 
-  CRM_Core_Error::debug_log_message('com.ginkgostreet.conditionalfields: Unable to get the entity ID for form ' . get_class($form));
-  return NULL;
-}
+/**
+ * Implements hook_civicrm_navigationMenu().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
+ *
+function conditionalfields_civicrm_navigationMenu(&$menu) {
+  _conditionalfields_civix_insert_navigation_menu($menu, 'Mailings', array(
+    'label' => E::ts('New subliminal message'),
+    'name' => 'mailing_subliminal_message',
+    'url' => 'civicrm/mailing/subliminal',
+    'permission' => 'access CiviMail',
+    'operator' => 'OR',
+    'separator' => 0,
+  ));
+  _conditionalfields_civix_navigationMenu($menu);
+} // */
