@@ -6,6 +6,8 @@ function showHideObj (name) {
   this.triggers = [];
 }
 
+var SHOW_SPEED = 300;
+
 /**
  * @param fieldName string - name of triggering field
  * @param value string - name of triggering value
@@ -33,7 +35,7 @@ showHideObj.prototype.toggle = function(removedVal) {
         triggerEl.children('option[value="' + trigger.value + '"]').length &&
         removedVal !== trigger.value
       ) {
-        SHO.element.show(1000);
+        SHO.element.show(SHOW_SPEED);
         ruleApplied = true;
         return false;
       }
@@ -46,13 +48,13 @@ showHideObj.prototype.toggle = function(removedVal) {
         )
         // standard check: if checked box has the value, show the dependent
         || cj(triggerEl).filter(':checked[value=' + trigger.value + ']').length) {
-        SHO.element.show(1000);
+        SHO.element.show(SHOW_SPEED);
         ruleApplied = true;
         return false;
       }
     } else {
       if (cj(triggerEl).val() === trigger.value) {
-        SHO.element.show(1000);
+        SHO.element.show(SHOW_SPEED);
         ruleApplied = true;
         return false;
       }
@@ -61,7 +63,7 @@ showHideObj.prototype.toggle = function(removedVal) {
 
   if (!ruleApplied) {
     this.unsetValue();
-    this.element.hide(1000);
+    this.element.hide(SHOW_SPEED);
   }
 };
 
